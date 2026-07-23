@@ -3,6 +3,9 @@ env/
 venv/
 .venv/
 
+
+data/
+
 # Python
 __pycache__/
 *.pyc

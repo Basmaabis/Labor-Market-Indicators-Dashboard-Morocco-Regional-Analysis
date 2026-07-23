@@ -21,9 +21,6 @@ REGION_RENAMES = {
     "Daraa-Tafilelt": "Drâa-Tafilalet",
     "Fes-Meknes": "Fès-Meknès",
     "Souss Massa": "Souss-Massa",
-    "Casablanca-Settat": "Casablanca-Settat",
-    "Marrakech-Safi": "Marrakech-Safi",
-    "Oriental": "Oriental",
 }
 
 

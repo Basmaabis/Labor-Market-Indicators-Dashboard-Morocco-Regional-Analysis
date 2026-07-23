@@ -47,19 +47,18 @@ with st.container(border=True):
         year = st.selectbox("Choisir une année", years)
     with f3:
         regions = sorted(df.loc[~df["is_national"], "region"].dropna().unique())
-        default = regions.index(FOCUS_REGION) if FOCUS_REGION in regions else 0
+        default_index = regions.index(FOCUS_REGION) if FOCUS_REGION in regions else 0
+        default_regions = regions[default_index:default_index + 1]
+        if len(regions) > 1:
+            second_region = next((region for region in regions if region not in default_regions), None)
+            if second_region:
+                default_regions.append(second_region)
         selected_regions = st.multiselect(
             "Comparer des régions",
             regions,
-            default=[regions[default], regions[0] if regions[0] != regions[default] else regions[min(1, len(regions) - 1)]],
-            max_selections=3,
+            default=default_regions,
+            max_selections=min(3, len(regions)),
         )
-
-if len(indicators) < 3:
-    st.info(
-        "Le sélecteur est prêt pour trois indicateurs, mais le fichier actuel contient uniquement les colonnes disponibles. "
-        "Ajoutez taux_emploi et taux_sous_emploi au CSV pour activer les vues multi-indicateurs."
-    )
 
 data_year = regional_data(df, int(year), indicator)
 stats = summary(data_year)

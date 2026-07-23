@@ -2,7 +2,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Béni Mellal-Khénifra,6.6,False,,,
 2016,Béni Mellal-Khénifra,7.1,False,,,
 2017,Béni Mellal-Khénifra,6.1,False,42.9,15.2,45.7
-2018,Béni Mellal-Khénifra,5.8,False,41.5,15.2,
+2018,Béni Mellal-Khénifra,5.8,False,41.5,15.2,44.1
 2019,Béni Mellal-Khénifra,5.4,False,,,
 2020,Béni Mellal-Khénifra,7.4,False,,,
 2021,Béni Mellal-Khénifra,9.6,False,,,
@@ -13,7 +13,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Casablanca-Settat,10.0,False,,,
 2016,Casablanca-Settat,9.3,False,,,
 2017,Casablanca-Settat,11.3,False,44.8,7.5,50.5
-2018,Casablanca-Settat,10.2,False,44.7,6.2,
+2018,Casablanca-Settat,10.2,False,44.7,6.2,49.8
 2019,Casablanca-Settat,10.0,False,,,
 2020,Casablanca-Settat,13.4,False,,,
 2021,Casablanca-Settat,14.6,False,,,
@@ -24,7 +24,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Drâa-Tafilalet,7.2,False,,,
 2016,Drâa-Tafilalet,6.9,False,,,
 2017,Drâa-Tafilalet,6.0,False,37.8,4.5,40.2
-2018,Drâa-Tafilalet,5.3,False,38.4,3.7,
+2018,Drâa-Tafilalet,5.3,False,38.4,3.7,40.6
 2019,Drâa-Tafilalet,5.6,False,,,
 2020,Drâa-Tafilalet,8.9,False,,,
 2021,Drâa-Tafilalet,9.6,False,,,
@@ -35,7 +35,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Fès-Meknès,8.6,False,,,
 2016,Fès-Meknès,7.6,False,,,
 2017,Fès-Meknès,9.5,False,39.4,16.2,43.6
-2018,Fès-Meknès,9.3,False,38.7,13.8,
+2018,Fès-Meknès,9.3,False,38.7,13.8,42.7
 2019,Fès-Meknès,8.7,False,,,
 2020,Fès-Meknès,12.5,False,,,
 2021,Fès-Meknès,13.4,False,,,
@@ -46,7 +46,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Marrakech-Safi,7.4,False,,,
 2016,Marrakech-Safi,7.4,False,,,
 2017,Marrakech-Safi,7.2,False,44.9,6.6,48.4
-2018,Marrakech-Safi,6.9,False,44.8,7.8,
+2018,Marrakech-Safi,6.9,False,44.8,7.8,48.1
 2019,Marrakech-Safi,5.7,False,,,
 2020,Marrakech-Safi,6.9,False,,,
 2021,Marrakech-Safi,7.6,False,,,
@@ -57,7 +57,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,National,9.7,True,,,
 2016,National,9.4,True,,,
 2017,National,10.2,True,41.9,9.8,46.7
-2018,National,9.5,True,41.7,9.5,
+2018,National,9.5,True,41.7,9.5,46.0
 2019,National,9.2,True,,,
 2020,National,11.9,True,,,
 2021,National,12.3,True,,,
@@ -68,7 +68,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Oriental,15.0,False,,,
 2016,Oriental,15.7,False,,,
 2017,Oriental,17.1,False,37.3,12.7,45.0
-2018,Oriental,15.6,False,37.1,11.8,
+2018,Oriental,15.6,False,37.1,11.8,44.0
 2019,Oriental,13.8,False,,,
 2020,Oriental,20.7,False,,,
 2021,Oriental,18.1,False,,,
@@ -79,7 +79,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Rabat-Salé-Kénitra,10.0,False,,,
 2016,Rabat-Salé-Kénitra,10.8,False,,,
 2017,Rabat-Salé-Kénitra,12.9,False,41.2,8.9,47.3
-2018,Rabat-Salé-Kénitra,11.4,False,41.0,9.4,
+2018,Rabat-Salé-Kénitra,11.4,False,41.0,9.4,46.3
 2019,Rabat-Salé-Kénitra,10.7,False,,,
 2020,Rabat-Salé-Kénitra,12.7,False,,,
 2021,Rabat-Salé-Kénitra,12.2,False,,,
@@ -89,8 +89,8 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2025,Rabat-Salé-Kénitra,12.7,False,,,
 2015,Régions du Sud,16.5,False,,,
 2016,Régions du Sud,15.9,False,,,
-2017,Régions du Sud,13.1,False,,,46.4
-2018,Régions du Sud,14.7,False,,,
+2017,Régions du Sud,13.1,False,40.7,5.5,46.4
+2018,Régions du Sud,14.7,False,39.6,3.2,46.4
 2019,Régions du Sud,16.3,False,,,
 2020,Régions du Sud,19.8,False,,,
 2021,Régions du Sud,20.1,False,,,
@@ -101,7 +101,7 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2015,Souss-Massa,10.1,False,,,
 2016,Souss-Massa,9.0,False,,,
 2017,Souss-Massa,9.8,False,39.2,7.2,43.4
-2018,Souss-Massa,10.1,False,38.6,6.7,
+2018,Souss-Massa,10.1,False,38.6,6.7,42.9
 2019,Souss-Massa,10.3,False,,,
 2020,Souss-Massa,11.8,False,,,
 2021,Souss-Massa,11.3,False,,,
@@ -111,8 +111,8 @@ annee,region,taux_chomage,is_national,taux_emploi,taux_sous_emploi,taux_activite
 2025,Souss-Massa,11.1,False,,,
 2015,Tanger-Tétouan-Al Hoceïma,10.7,False,,,
 2016,Tanger-Tétouan-Al Hoceïma,9.6,False,,,
-2017,Tanger-Tétouan-Al Hoceïma,8.2,False,,,46.7
-2018,Tanger-Tétouan-Al Hoceïma,7.5,False,,,
+2017,Tanger-Tétouan-Al Hoceïma,8.2,False,42.8,12.5,46.7
+2018,Tanger-Tétouan-Al Hoceïma,7.5,False,43.2,14.5,46.7
 2019,Tanger-Tétouan-Al Hoceïma,8.6,False,,,
 2020,Tanger-Tétouan-Al Hoceïma,10.4,False,,,
 2021,Tanger-Tétouan-Al Hoceïma,10.8,False,,,

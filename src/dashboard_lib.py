@@ -1,10 +1,11 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import base64
 import json
 from pathlib import Path
 
 import pandas as pd
+from data_loader import load_data as load_clean_data
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -42,12 +43,9 @@ INDICATORS = {
     "Taux de chômage": "taux_chomage",
     "Taux d'emploi": "taux_emploi",
     "Taux de sous-emploi": "taux_sous_emploi",
-    "Activité": "taux_activite",
+    "Taux d'activité": "taux_activite",
 }
 
-REGION_FIXES = {}
-
-GEOJSON_REGION_FIXES = {}
 
 
 def load_regions_geojson() -> dict:
@@ -85,15 +83,7 @@ def load_css() -> str:
 
 
 def load_data() -> pd.DataFrame:
-    df = pd.read_csv(DATA_PATH, encoding="utf-8")
-    df["region"] = df["region"].replace(REGION_FIXES)
-    df["annee"] = pd.to_numeric(df["annee"], errors="coerce").astype("Int64")
-    for col in ["taux_chomage", "taux_emploi", "taux_sous_emploi", "taux_activite"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-    if "is_national" not in df.columns:
-        df["is_national"] = df["region"].eq("National")
-    return df
+    return load_clean_data(DATA_PATH)
 
 
 def available_indicators(df: pd.DataFrame) -> list[str]:
@@ -106,6 +96,21 @@ def available_years(df: pd.DataFrame, indicator_label: str) -> list[int]:
         return []
     years = pd.to_numeric(df.loc[df[col].notna(), "annee"], errors="coerce").dropna().astype(int)
     return sorted(years.unique().tolist(), reverse=True)
+
+
+def indicator_availability_note(df: pd.DataFrame, indicator_label: str) -> str:
+    years = sorted(available_years(df, indicator_label))
+    if not years:
+        return f"Aucune année disponible pour {indicator_label}."
+    if len(years) == 1:
+        return f"Données disponibles pour {indicator_label} : {years[0]} uniquement."
+    year_span = f"{years[0]}-{years[-1]}"
+    if years != sorted(df["annee"].dropna().astype(int).unique().tolist()):
+        return (
+            f"Données disponibles pour {indicator_label} : {year_span} seulement. "
+            "Les autres années ne sont pas affichées car elles ne sont pas présentes dans les fichiers sources."
+        )
+    return f"Données disponibles pour {indicator_label} : {year_span}."
 
 
 def value_column(indicator_label: str) -> str:
@@ -287,17 +292,28 @@ def heatmap_year_region(df: pd.DataFrame, indicator: str):
 
 
 def radar_chart(df: pd.DataFrame, year: int, regions: list[str]):
-    available = available_indicators(df)
+    year_df = df[df["annee"] == year]
+    available = [
+        label
+        for label in available_indicators(df)
+        if value_column(label) in year_df.columns and year_df[value_column(label)].notna().any()
+    ]
     if len(available) < 2:
         return None
+
     rows = []
     for region in regions:
+        subset = year_df[year_df["region"] == region]
+        if subset.empty:
+            continue
         row = {"region": region}
-        subset = df[(df["annee"] == year) & (df["region"] == region)]
         for label in available:
-            col = value_column(label)
-            row[label] = None if subset.empty else subset[col].iloc[0]
-        rows.append(row)
+            row[label] = subset[value_column(label)].iloc[0]
+        if all(pd.notna(row[label]) for label in available):
+            rows.append(row)
+    if not rows:
+        return None
+
     fig = go.Figure()
     for index, row in enumerate(rows):
         values = [row[label] for label in available]

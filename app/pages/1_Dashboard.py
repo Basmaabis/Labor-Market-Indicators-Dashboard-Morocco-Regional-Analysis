@@ -23,6 +23,10 @@ st.markdown(header_html("TABLEAU DE BORD DES INDICATEURS DU MARCHÉ DU TRAVAIL",
 df = load_data()
 indicators = available_indicators(df)
 
+if not indicators:
+    st.error("Aucun indicateur exploitable n'a été trouvé dans le fichier de données.")
+    st.stop()
+
 
 c1, c2 = st.columns(2)
 with c1:

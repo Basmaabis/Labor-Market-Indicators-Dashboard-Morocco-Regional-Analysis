@@ -29,6 +29,10 @@ st.markdown(header_html("TABLEAU DE BORD DES INDICATEURS DU MARCHÉ DU TRAVAIL",
 
 df = load_data()
 indicators = available_indicators(df)
+
+if not indicators:
+    st.error("Aucun indicateur exploitable n'a été trouvé dans le fichier de données.")
+    st.stop()
 regions = sorted(df.loc[~df["is_national"], "region"].dropna().unique())
 
 
