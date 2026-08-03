@@ -123,9 +123,10 @@ National Employment Survey (ENE)
 ## 👩‍💻 Author
 
 **Basma Abis**
-Engineering student — Software and Intelligent Systems (LSI) track
+Engineering student — Software and Intelligent Systems 
+
 Faculty of Sciences and Techniques of Tangier — Abdelmalek Essaâdi University
 
-Full design, development, and deployment of the project — from analyzing the DRTTA's needs to the final application : carried out independently as part of an internship at the HCP.
+Full design, development, and deployment of the project : from analyzing the DRTTA's needs to the final application : carried out independently as part of an internship at the HCP.
 
 📧 [pcdebasma@gmail.com](mailto:pcdebasma@gmail.com) · [GitHub](https://github.com/Basmaabis)
