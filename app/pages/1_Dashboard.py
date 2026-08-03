@@ -13,7 +13,7 @@ from dashboard_lib import (
     load_data,
     ranking_bar,
     regional_data,
-    style_ranking_table,
+    ranking_table_html,
     summary,
 )
 st.set_page_config(page_title="Dashboard", layout="wide")
@@ -28,7 +28,7 @@ if not indicators:
     st.stop()
 
 
-c1, c2 = st.columns(2)
+c1, c2, c3 = st.columns([1, 1, 2])
 with c1:
     indicator = st.selectbox("Indicateur", indicators)
 years = available_years(df, indicator)
@@ -36,7 +36,10 @@ if not years:
     st.error(f"Aucune donnée disponible pour l'indicateur {indicator}.")
     st.stop()
 with c2:
-    year = st.selectbox("Année", years)
+    year = st.selectbox("Années", years)
+with c3:
+    regions = sorted(df.loc[~df["is_national"], "region"].dropna().unique())
+    selected_regions = st.multiselect("Régions à surligner", regions, default=regions[:2], max_selections=min(2, len(regions)))
 
 data = regional_data(df, int(year), indicator)
 stats = summary(data)
@@ -48,12 +51,8 @@ m3.metric("Taux le plus faible", f"{stats['min_value']:.1f}%", stats["min_region
 
 left, right = st.columns([1.4, 1])
 with left:
-    st.plotly_chart(ranking_bar(data, indicator, int(year)), use_container_width=True)
+    st.plotly_chart(ranking_bar(data, indicator, int(year), selected_regions), use_container_width=True)
 with right:
-    st.dataframe(
-        style_ranking_table(data).style.format({"Taux (%)": "{:.1f}", "Écart à la moyenne": "{:+.1f}"}),
-        use_container_width=True,
-        hide_index=True,
-    )
+    st.markdown(ranking_table_html(data, selected_regions), unsafe_allow_html=True)
 
 

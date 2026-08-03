@@ -19,7 +19,7 @@ from dashboard_lib import (
     ranking_bar,
     regional_data,
     schematic_map,
-    style_ranking_table,
+    ranking_table_html,
     summary,
 )
 
@@ -57,7 +57,7 @@ with st.container(border=True):
             "Comparer des régions",
             regions,
             default=default_regions,
-            max_selections=min(3, len(regions)),
+            max_selections=min(2, len(regions)),
         )
 
 data_year = regional_data(df, int(year), indicator)
@@ -79,22 +79,18 @@ with st.container(border=True):
 ranking_left, ranking_right = st.columns([1.25, 0.85])
 with ranking_left:
     with st.container(border=True):
-        st.plotly_chart(ranking_bar(data_year, indicator, int(year)), use_container_width=True)
+        st.plotly_chart(ranking_bar(data_year, indicator, int(year), selected_regions), use_container_width=True)
 with ranking_right:
     with st.container(border=True):
         st.subheader(f"Classement régional - {year}")
-        table = style_ranking_table(data_year)
-        st.dataframe(
-            table.style.format({"Taux (%)": "{:.1f}", "Écart à la moyenne": "{:+.1f}"}),
-            use_container_width=True,
-            hide_index=True,
-        )
+        table = ranking_table_html(data_year, selected_regions)
+        st.markdown(table, unsafe_allow_html=True)
 
 with st.container(border=True):
     st.plotly_chart(evolution_line(df, indicator, selected_regions), use_container_width=True)
 
 with st.container(border=True):
-    st.plotly_chart(heatmap_year_region(df, indicator), use_container_width=True)
+    st.plotly_chart(heatmap_year_region(df, indicator, selected_regions), use_container_width=True)
 
 map_col, radar_col = st.columns([1, 1])
 with map_col:

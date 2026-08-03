@@ -18,7 +18,7 @@ from dashboard_lib import (
     load_data,
     regional_data,
     schematic_map,
-    style_ranking_table,
+    ranking_table_html,
     summary,
     value_column,
 )
@@ -44,7 +44,7 @@ if not years:
     st.error(f"Aucune donnée disponible pour l'indicateur {indicator}.")
     st.stop()
 with c2:
-    year = st.selectbox("Année", years)
+    year = st.selectbox("Années", years)
 
 data_year = regional_data(df, int(year), indicator)
 stats = summary(data_year, FOCUS_REGION)
@@ -69,7 +69,7 @@ with right:
             color=position_data["region"].eq(FOCUS_REGION),
             color_discrete_map={True: "#C47C5A", False: "#D6E7E4"},
             title=f"Position nationale - {year}",
-            labels={"valeur": "Taux (%)", "region": "", "color": ""},
+            labels={"valeur": "Taux (%)", "region": "Régions", "color": ""},
         )
         position_fig.update_layout(showlegend=False)
         st.plotly_chart(clean_plot(position_fig), use_container_width=True)
@@ -79,11 +79,7 @@ with st.container(border=True):
 
 with st.container(border=True):
     st.subheader("Classement détaillé")
-    st.dataframe(
-        style_ranking_table(data_year).style.format({"Taux (%)": "{:.1f}", "Écart à la moyenne": "{:+.1f}"}),
-        use_container_width=True,
-        hide_index=True,
-    )
+    st.markdown(ranking_table_html(data_year, [FOCUS_REGION]), unsafe_allow_html=True)
 
 
 

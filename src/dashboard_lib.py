@@ -21,6 +21,7 @@ GRID = "#E5E7EB"
 PAGE_BG = "#F8FAFC"
 CARD_BG = "#FFFFFF"
 DATA_FOCUS = "#C47C5A"
+HIGHLIGHT_COLORS = ["#800020", "#E67E22"]
 SERIES_COLORS = ["#800020", "#F18A2B", "#C47C5A", "#A7B18A", "#4A6670"]
 MAP_SCALE = ["#E8E2D5", "#C9BFA8", "#9FC5C1", "#6D8A96", "#4A6670"]
 HEATMAP_SCALE = ["#EAF1FA", "#BBD3EA", "#7FA8D2", "#4A78AE", "#1F4E86"]
@@ -46,6 +47,21 @@ INDICATORS = {
     "Taux d'activité": "taux_activite",
 }
 
+
+
+def highlight_color_map(regions: list[str] | None) -> dict[str, str]:
+    selected = list(dict.fromkeys(regions or []))[:2]
+    return {region: HIGHLIGHT_COLORS[index] for index, region in enumerate(selected)}
+
+
+def highlighted_tick_labels(values, highlighted_regions: list[str] | None = None) -> list[str]:
+    colors = highlight_color_map(highlighted_regions)
+    labels = []
+    for value in values:
+        text = str(value)
+        color = colors.get(text)
+        labels.append(f"<b><span style='color:{color}'>{text}</span></b>" if color else text)
+    return labels
 
 
 def load_regions_geojson() -> dict:
@@ -161,13 +177,15 @@ def clean_plot(fig):
         margin=dict(l=24, r=24, t=70, b=36),
         title=dict(font=dict(size=18, color=TITLE), x=0.02, xanchor="left"),
         legend=dict(orientation="v", bgcolor="rgba(255,255,255,0.92)", font=dict(color=SECONDARY)),
+        hovermode=False,
     )
+    fig.update_traces(hoverinfo="skip", hovertemplate=None)
     fig.update_xaxes(showgrid=True, gridcolor=GRID, griddash="dot", zeroline=False, title_font_color=SECONDARY, tickfont_color=SECONDARY)
     fig.update_yaxes(showgrid=False, zeroline=False, title_font_color=SECONDARY, tickfont_color=SECONDARY, automargin=True)
     return fig
 
 
-def ranking_bar(data: pd.DataFrame, indicator: str, year: int):
+def ranking_bar(data: pd.DataFrame, indicator: str, year: int, highlighted_regions: list[str] | None = None):
     chart = data.sort_values("valeur", ascending=True).copy()
     fig = px.bar(
         chart,
@@ -177,20 +195,27 @@ def ranking_bar(data: pd.DataFrame, indicator: str, year: int):
         color="valeur",
         color_continuous_scale=MAP_SCALE,
         text=chart["valeur"].map(lambda v: f"{v:.1f}%"),
-        hover_data={"region": True, "valeur": ":.1f", "rang": True},
         title=f"Classement régional - {indicator} ({year})",
-        labels={"valeur": "Taux (%)", "region": ""},
+        labels={"valeur": "Taux (%)", "region": "Régions"},
     )
-    fig.update_traces(textposition="outside", marker_line_width=0, cliponaxis=False)
-    fig.update_layout(height=500)
-    focus_mask = chart["region"].eq(FOCUS_REGION).tolist()
-    fig.update_traces(marker_line_color=[DATA_FOCUS if is_focus else "rgba(0,0,0,0)" for is_focus in focus_mask], marker_line_width=[3 if is_focus else 0 for is_focus in focus_mask])
+    fig.update_traces(
+        marker_line_width=0,
+        textposition="outside",
+        cliponaxis=False,
+    )
+    fig.update_yaxes(
+        tickmode="array",
+        tickvals=chart["region"].tolist(),
+        ticktext=highlighted_tick_labels(chart["region"].tolist(), highlighted_regions),
+    )
+    fig.update_layout(height=500, showlegend=False)
     return clean_plot(fig)
 
 
 def comparison_bar(df: pd.DataFrame, regions: list[str], indicator: str):
     col = value_column(indicator)
     data = df[(df["region"].isin(regions)) & (~df["is_national"])].copy().dropna(subset=[col])
+    years = sorted(data["annee"].dropna().astype(int).unique().tolist())
     fig = px.bar(
         data,
         x="annee",
@@ -200,10 +225,10 @@ def comparison_bar(df: pd.DataFrame, regions: list[str], indicator: str):
         color_discrete_sequence=SERIES_COLORS,
         text=data[col].map(lambda v: f"{v:.1f}%"),
         title="Comparaison temporelle des régions sélectionnées",
-        labels={"annee": "Année", col: "Taux (%)", "region": "Région"},
-        hover_data={col: ":.1f"},
+        labels={"annee": "Années", col: "Taux (%)", "region": "Régions"},
     )
     fig.update_traces(textposition="outside", marker_line_width=0, cliponaxis=False)
+    fig.update_xaxes(tickmode="array", tickvals=years, ticktext=[str(year) for year in years])
     fig.update_layout(height=560)
     return clean_plot(fig)
 
@@ -213,6 +238,7 @@ def evolution_line(df: pd.DataFrame, indicator: str, selected_regions: list[str]
     data = df.dropna(subset=[col]).copy()
     if selected_regions:
         data = data[data["region"].isin(selected_regions + ["National"])]
+    years = sorted(data["annee"].dropna().astype(int).unique().tolist())
     fig = px.line(
         data,
         x="annee",
@@ -220,19 +246,19 @@ def evolution_line(df: pd.DataFrame, indicator: str, selected_regions: list[str]
         color="region",
         markers=True,
         title=f"Évolution temporelle - {indicator}",
-        labels={"annee": "Année", col: "Taux (%)", "region": "Région"},
+        labels={"annee": "Années", col: "Taux (%)", "region": "Régions"},
         color_discrete_sequence=SERIES_COLORS,
-        hover_data={col: ":.1f"},
     )
+    fig.update_xaxes(tickmode="array", tickvals=years, ticktext=[str(year) for year in years])
     fig.update_layout(height=540)
     for trace in fig.data:
         if trace.name == "National":
             trace.line.dash = "dash"
             trace.line.width = 3
             trace.line.color = "#A7B18A"
-        elif trace.name == FOCUS_REGION:
+        elif selected_regions and trace.name in selected_regions:
             trace.line.width = 4
-            trace.line.color = DATA_FOCUS
+            trace.line.color = highlight_color_map(selected_regions).get(trace.name, DATA_FOCUS)
         else:
             trace.line.width = 2
             trace.opacity = 0.82
@@ -284,10 +310,25 @@ def schematic_map(data: pd.DataFrame, indicator: str, year: int):
     return fig
 
 
-def heatmap_year_region(df: pd.DataFrame, indicator: str):
+def heatmap_year_region(df: pd.DataFrame, indicator: str, highlighted_regions: list[str] | None = None):
     col = value_column(indicator)
     data = df[~df["is_national"]].pivot_table(index="region", columns="annee", values=col, aggfunc="mean").sort_index()
-    fig = px.imshow(data, color_continuous_scale=HEATMAP_SCALE, aspect="auto", text_auto=".1f", title=f"Heatmap régions x années - {indicator}", labels=dict(color="Taux (%)"))
+    years = sorted([int(year) for year in data.columns.tolist()])
+    data = data.loc[:, years]
+    fig = px.imshow(
+        data,
+        color_continuous_scale=HEATMAP_SCALE,
+        aspect="auto",
+        text_auto=".1f",
+        title=f"Heatmap régions x années - {indicator}",
+        labels=dict(x="Années", y="Régions", color="Taux (%)"),
+    )
+    fig.update_xaxes(tickmode="array", tickvals=years, ticktext=[str(year) for year in years])
+    fig.update_yaxes(
+        tickmode="array",
+        tickvals=data.index.tolist(),
+        ticktext=highlighted_tick_labels(data.index.tolist(), highlighted_regions),
+    )
     return clean_plot(fig)
 
 
@@ -322,12 +363,30 @@ def radar_chart(df: pd.DataFrame, year: int, regions: list[str]):
     return clean_plot(fig)
 
 
-def style_ranking_table(data: pd.DataFrame):
+def style_ranking_table(data: pd.DataFrame, highlighted_regions: list[str] | None = None):
     view = data[["rang", "region", "valeur", "ecart_moyenne"]].copy()
-    return view.rename(columns={"rang": "Rang", "region": "Région", "valeur": "Taux (%)", "ecart_moyenne": "Écart à la moyenne"})
+    view = view.rename(columns={"rang": "Rang", "region": "Régions", "valeur": "Taux (%)", "ecart_moyenne": "Écart à la moyenne"})
+    colors = highlight_color_map(highlighted_regions)
+
+    def highlight_row(row):
+        color = colors.get(row["Régions"])
+        if not color:
+            return [""] * len(row)
+        return [f"color: {color}; font-weight: 800;"] * len(row)
+
+    return (
+        view.style
+        .hide(axis="index")
+        .format({"Taux (%)": "{:.1f}", "Écart à la moyenne": "{:+.1f}"})
+        .apply(highlight_row, axis=1)
+        .set_table_attributes('class="ranking-html-table"')
+        .set_table_styles([
+            {"selector": "", "props": [("width", "100%"), ("table-layout", "fixed"), ("border-collapse", "collapse")]},
+            {"selector": "th", "props": [("background", "#F8FAFC"), ("color", TITLE), ("font-weight", "700"), ("padding", "9px 10px"), ("border", f"1px solid {BORDER}"), ("font-size", "0.88rem")]},
+            {"selector": "td", "props": [("padding", "8px 10px"), ("border", f"1px solid {BORDER}"), ("font-size", "0.86rem"), ("white-space", "normal"), ("word-break", "break-word")]},
+        ])
+    )
 
 
-
-
-
-
+def ranking_table_html(data: pd.DataFrame, highlighted_regions: list[str] | None = None) -> str:
+    return style_ranking_table(data, highlighted_regions).to_html()
