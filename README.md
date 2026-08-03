@@ -79,36 +79,6 @@ This separation between **business logic and interface** is a deliberate choice:
 
 ---
 
-## 🚀 Quick start
-
-### Prerequisites
-
-- Python 3.10 or higher
-- pip
-
-### Installation
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/Basmaabis/regional-unemployment-dashboard.git
-cd regional-unemployment-dashboard
-
-# 2. Create and activate the virtual environment
-python -m venv env
-env\Scripts\activate        # Windows
-# source env/bin/activate   # macOS / Linux
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run the application
-streamlit run app/app.py
-```
-
-The application opens automatically at [http://localhost:8501](http://localhost:8501).
-
----
-
 ## 🗂️ Project structure
 
 ```
